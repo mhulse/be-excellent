@@ -1,0 +1,29 @@
+<csr:rule name="custom.rg.test.SectionRule" match="custom:rg:test:section" empty>
+	
+	<csr:description>
+		
+		<p>Example of a RULE (single tag) that attempts to write a passed object to "PREHTML" or "POSTHTML".</p>
+		
+		<p>Use this code at your own risk!</p>
+		
+	</csr:description>
+	
+	<csr:attribute name="object" description="" type="object:OBJECT" required />
+	<csr:attribute name="prehtml" description="" type="head:NUMBER" />
+	<csr:attribute name="posthtml" description="" type="body:NUMBER" />
+	
+	<csr:action>
+		
+		<csr:section name="##($select(..IsDefined("prehtml"):"PREHTML", ..IsDefined("posthtml"):"POSTHTML", 1:""))##" block="##($select($isvalidnum(..GetAttribute("prehtml"), 0):$number(..GetAttribute("prehtml"), 0), $isvalidnum(..GetAttribute("posthtml"), 0):$number(..GetAttribute("posthtml"), 0), 1:0))##">
+			
+			<script language="cache" runat="server">
+				
+				write "hello " _ ##'..GetAttribute("object", "")'## _ "!"
+				
+			</script>
+			
+		</csr:section>
+		
+	</csr:action>
+	
+</csr:rule>

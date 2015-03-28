@@ -1,0 +1,67 @@
+<csr:rule name="custom.rg.test.LoopRule" match="custom:rg:test:loop">
+	
+	<csr:class super="%CSP.RuleBlock" />
+	
+	<csr:description>
+		
+		<p>Example of a looping RULE (tag pair) where variable "count" is available to the RULE's children.</p>
+		
+		<p>Use this code at your own risk!</p>
+		
+	</csr:description>
+	
+	<csr:attribute name="number" description="How man times should this tag loop? Default value is 10." type="number:INTEGER" />
+	
+	<csr:action>
+		
+		<script language="cache" runat="compiler">
+			
+			; QuoteAttribute: The value is quoted for substitution with #()#, ##( )## and ##''## expressions resolved.
+			; Example: set baz = ##this.QuoteAttribute("baz", "default value")
+			;
+			; GetAttribute: The value already has any ##( )## and ##''## expressions resolved.
+			; Example: set baz = ##this.GetAttribute("baz", "default value")
+			
+			/*--------------------------------------------------------------------*/
+			
+			; Initialize:
+			new csr // Using array variable, as it's easier to kill later.
+			
+			; Get the attribute:
+			set csr("number") = ##this.GetAttribute("number", "10")
+			
+			; Initialize blocks and labels:
+			do ##this.NewBlock()
+			set ##this.EndLabel = ##this.GetNewLabel()
+			set ##this.NextLabel = ##this.GetNewLabel()
+			
+			; Write code to server:
+			do ##this.WriteServer(" new count                            ")
+			do ##this.WriteServer(" set count = 0                        ")
+			do ##this.WriteServer(  ##this.NextLabel                      ) // This line designates the looping point.
+			do ##this.WriteServer(" set count = count + 1                ")
+			do ##this.WriteServer(" if (count > " _ csr("number") _ ") { ") // If count is greater than attribute "number"...
+			do ##this.WriteServer(" 	goto " _ ##this.EndLabel _ " ;{  ") // ... finish the loop.
+			do ##this.WriteServer(" }                                    ")
+			
+			kill csr // GC.
+			
+		</script>
+		
+		<csr:children />
+		
+		<script language="cache" runat="compiler">
+			
+			; Negotiate labels:
+			do ##this.WriteServer(" goto " _ ##this.NextLabel) // Go back up!
+			do ##this.WriteServer( ##this.EndLabel _ " ;} ") // We're done looping...
+			do ##this.RemoveBlock() // Remove the block!
+			
+			; Garbage collection:
+			do ##this.WriteServer(" kill count ")
+			
+		</script>
+		
+	</csr:action>
+	
+</csr:rule>

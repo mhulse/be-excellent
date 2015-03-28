@@ -1,0 +1,94 @@
+<csr:rule name="custom.rg.test.IfElseRule" match="custom:rg:test:ifelse">
+	
+	<csr:class super="%CSP.RuleBlock" />
+	
+	<csr:description>
+		
+		<p>Example of a RULE that behaves like an if/else tag.</p>
+		
+		<p>Use this code at your own risk!</p>
+		
+	</csr:description>
+	
+	<csr:attribute name="boolean" description="Value assumed to be 'true' if this attribute is defined." type="number:INTEGER" />
+	
+	<csr:action>
+		
+		<script language="cache" runat="compiler">
+			
+			; Initialize blocks and labels:
+			do ##this.NewBlock()
+			set ##this.EndLabel = ##this.GetNewLabel()
+			set ##this.NextLabel = ##this.GetNewLabel()
+			
+			do ##this.WriteServer(" if (" _ ##this.IsDefined("boolean") _ ") { ")
+			do ##this.WriteServer(" 	goto " _ ##this.NextLabel _ " ;{       ")
+			do ##this.WriteServer(" }                                          ")
+			
+		</script>
+		
+		<csr:children />
+		
+		<script language="cache" runat="compiler">
+			
+			; Initialize:
+			new csr // Using array variable, as it's easier to kill later.
+			
+			set csr("comment") = ";}"
+			
+			if (##this.EndLabel '= "") {
+				do ##this.WriteServer( ##this.EndLabel _ csr("comment") )
+				set csr("comment") = ""
+			}
+			
+			if (##this.NextLabel '= "") {
+				do ##this.WriteServer( ##this.NextLabel _ csr("comment") )
+				do ##this.RemoveBlock()
+			}
+			
+			kill csr // GC.
+			
+		</script>
+		
+	</csr:action>
+	
+</csr:rule>
+
+<csr:rule name="custom.rg.test.IfElseElseRule" match="custom:rg:test:ifelse/custom:rg:else" empty>
+	
+	<csr:class super="%CSP.RuleBlock" />
+	
+	<csr:description>
+		
+		<p>Else, attribute "boolean" wasn't defined.</p>
+		
+	</csr:description>
+	
+	<csr:action>
+	
+		<script language="cache" runat="compiler">
+			
+			new csr // IBID.
+			
+			set csr("ifblock") = ##this.GetCurrentBlock()
+			
+			if (csr("ifblock") '= "") {
+				
+				if (csr("ifblock").EndLabel = "") {
+					set csr("ifblock").EndLabel = ##this.GetNewLabel()
+				}
+				
+				do ##this.WriteServer(" goto " _ csr("ifblock").EndLabel _ " ;} ")
+				do ##this.WriteServer( csr("ifblock").NextLabel _ " ;{ ")
+				
+				set csr("ifblock").NextLabel = ""
+				
+			}
+			
+			kill csr // GC.
+			
+		</script>
+		
+	</csr:action>
+	
+</csr:rule>

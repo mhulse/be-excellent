@@ -1,0 +1,25 @@
+<custom:rg:test:loop number="20">
+	
+	<p>Hello world ##(count)#!</p>
+	
+</custom:rg:test:loop>
+
+<csp:comment> DEBUG INFO: </csp:comment>
+
+<script language="cache" runat="server">
+	
+	; Debug:
+	write !, "<pre>"
+	try {
+	set currIO = ##class(%SYS.NLS.Device).SetIO("HTML")
+	zwrite
+	}
+	catch {
+	write "ERROR: ", $ZERROR
+	}
+	if ($get(currIO) '= "") {
+	do ##class(%SYS.NLS.Device).SetIO(currIO)
+	}
+	write "</pre>"
+	
+</script>

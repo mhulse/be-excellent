@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+
+<head>
+	
+	<meta charset="utf-8">
+	
+	<title>Section RULE test page</title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	
+</head>
+<body>
+
+<csp:comment> Create an object: </csp:comment>
+
+<csp:object name="gStory" classname="dt.cms.schema.CMSStory" objid="28804455" />
+
+<csp:comment> Put the object in the PREHTML section: </csp:comment>
+
+<custom:rg:test:section object="#(gStory)#" prehtml />
+
+<csp:comment> Put the object where it was called: </csp:comment>
+
+<custom:rg:test:section object="#(gStory)#" />
+
+<csp:comment> Put the object in the POSTHTML section: </csp:comment>
+
+<custom:rg:test:section object="#(gStory)#" posthtml />
+	
+</body>
+</html>
+
+<csp:comment> DEBUG INFO: </csp:comment>
+
+<script language="cache" runat="server">
+	
+	; Debug:
+	write !, "<pre>"
+	try {
+	set currIO = ##class(%SYS.NLS.Device).SetIO("HTML")
+	zwrite
+	}
+	catch {
+	write "ERROR: ", $ZERROR
+	}
+	if ($get(currIO) '= "") {
+	do ##class(%SYS.NLS.Device).SetIO(currIO)
+	}
+	write "</pre>"
+	
+</script>

@@ -1,0 +1,41 @@
+<custom:rg:test:ifelse>
+	
+	<p>IF 1</p>
+	
+<custom:rg:else>
+	
+	<p>ELSE 1</p>
+	
+</custom:rg:test:ifelse>
+
+<hr>
+
+<custom:rg:test:ifelse boolean>
+	
+	<p>IF 2</p>
+	
+<custom:rg:else>
+	
+	<p>ELSE 2</p>
+	
+</custom:rg:test:ifelse>
+
+<csp:comment> DEBUG INFO: </csp:comment>
+
+<script language="cache" runat="server">
+	
+	; Debug:
+	write !, "<pre>"
+	try {
+	set currIO = ##class(%SYS.NLS.Device).SetIO("HTML")
+	zwrite
+	}
+	catch {
+	write "ERROR: ", $ZERROR
+	}
+	if ($get(currIO) '= "") {
+	do ##class(%SYS.NLS.Device).SetIO(currIO)
+	}
+	write "</pre>"
+	
+</script>
